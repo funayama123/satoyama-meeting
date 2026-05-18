@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)file:///Users/funayamashigeru/Downloads/meeting_1.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>里山保全会 会議室</title>
+<style>
+  :root {
+    --moss:   #3d5a3e;
+    --leaf:   #5a8a5e;
+    --sprout: #8ab88e;
+    --mist:   #e8f0e8;
+    --soil:   #2e2e26;
+    --cream:  #f5f2ea;
+    --shadow: rgba(45,60,35,0.18);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Hiragino Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 90%, rgba(90,138,94,0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 10%, rgba(61,90,62,0.10) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  #login-screen {
+    position: relative; z-index: 1;
+    background: white; border-radius: 20px;
+    padding: 40px 36px 44px;
+    max-width: 440px; width: 92%;
+    box-shadow: 0 8px 40px var(--shadow);
+    animation: fadeUp .45s ease;
+  }
+  .login-icon { font-size: 36px; text-align: center; margin-bottom: 6px; }
+  .login-title {
+    font-size: 22px; color: var(--soil);
+    text-align: center; font-weight: 700;
+    letter-spacing: .05em; margin-bottom: 2px;
+  }
+  .login-sub {
+    text-align: center; font-size: 10px; color: #bbb;
+    letter-spacing: .18em; margin-bottom: 6px;
+  }
+  .divider-line { width: 36px; height: 2px; background: var(--sprout); margin: 0 auto 28px; }
+  .room-label { font-size: 12px; color: #888; margin-bottom: 10px; display: block; }
+  .room-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .room-card {
+    border: 1.5px solid #e0e8e0; border-radius: 14px;
+    padding: 18px 12px 14px; text-align: center;
+    cursor: pointer; background: white;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  .room-card:hover { border-color: var(--sprout); background: var(--mist); }
+  .room-card.selected { border-color: var(--moss); background: var(--mist); box-shadow: 0 0 0 3px rgba(61,90,62,0.12); }
+  .room-card-icon { font-size: 28px; margin-bottom: 6px; }
+  .room-card-name { font-size: 15px; font-weight: 700; color: var(--soil); margin-bottom: 3px; }
+  .room-card-desc { font-size: 10px; color: #999; }
+  .field-label { font-size: 12px; color: #888; display: block; margin-bottom: 8px; }
+  input[type="text"] {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid #e0e8e0; border-radius: 10px;
+    font-family: inherit; font-size: 15px; color: var(--soil);
+    background: #fafafa; outline: none;
+    transition: border-color .2s, box-shadow .2s; margin-bottom: 20px;
+  }
+  input[type="text"]:focus { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(90,138,94,0.13); background: white; }
+  .login-btn {
+    width: 100%; padding: 15px;
+    background: var(--moss); color: white;
+    border: none; border-radius: 10px;
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    letter-spacing: .12em; cursor: pointer;
+  }
+  .login-btn:active { opacity: .8; }
+  .error-msg { color: #c0392b; font-size: 12px; margin-top: 12px; text-align: center; display: none; line-height: 1.7; }
+  #chat-screen {
+    display: none; position: relative; z-index: 1;
+    width: 100%; max-width: 700px; height: 100vh; flex-direction: column;
+  }
+  .chat-header {
+    color: white; padding: 11px 16px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 10px var(--shadow); flex-shrink: 0;
+  }
+  .chat-header.rijikai { background: #4a6741; }
+  .chat-header.sokai   { background: var(--moss); }
+  .chat-header-icon { font-size: 20px; }
+  .chat-header-title { font-size: 15px; font-weight: 700; letter-spacing: .05em; flex: 1; }
+  .room-pill { font-size: 10px; background: rgba(255,255,255,0.22); border-radius: 20px; padding: 3px 9px; }
+  .user-badge { font-size: 11px; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.18); border-radius: 20px; padding: 3px 10px; }
+  .exit-btn {
+    background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+    color: white; border-radius: 8px; padding: 5px 10px; font-size: 12px;
+    cursor: pointer; white-space: nowrap; font-family: inherit;
+  }
+  #messages {
+    flex: 1; overflow-y: auto; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--cream);
+  }
+  #messages::-webkit-scrollbar { width: 5px; }
+  #messages::-webkit-scrollbar-thumb { background: var(--sprout); border-radius: 3px; }
+  .date-divider {
+    text-align: center; font-size: 11px; color: #9aaa9a;
+    display: flex; align-items: center; gap: 10px; margin: 4px 0;
+  }
+  .date-divider::before, .date-divider::after { content: ''; flex: 1; height: 1px; background: #d8e4d8; }
+  .sys-msg {
+    text-align: center; font-size: 11px; color: #7a9a7a;
+    background: rgba(138,184,142,0.13); border-radius: 20px;
+    padding: 5px 16px; align-self: center;
+  }
+  .msg-wrap { display: flex; gap: 8px; align-items: flex-end; }
+  .msg-wrap.mine { flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--sprout);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: white; flex-shrink: 0;
+  }
+  .msg-avatar.mine-av { background: var(--moss); }
+  .msg-body { max-width: 72%; }
+  .msg-name { font-size: 11px; color: #7a8a7a; margin-bottom: 3px; padding-left: 2px; }
+  .msg-wrap.mine .msg-name { text-align: right; padding-right: 2px; }
+  .msg-bubble {
+    padding: 10px 14px; border-radius: 18px 18px 18px 4px;
+    background: white; color: var(--soil); font-size: 14px; line-height: 1.7;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08); word-break: break-word; white-space: pre-wrap;
+  }
+  .msg-wrap.mine .msg-bubble { background: var(--moss); color: white; border-radius: 18px 18px 4px 18px; }
+  .msg-time { font-size: 10px; color: #b0b8b0; margin-top: 3px; padding-left: 3px; }
+  .msg-wrap.mine .msg-time { text-align: right; padding-right: 3px; }
+  .chat-footer {
+    background: white; border-top: 1px solid #e0eae0;
+    padding: 10px 14px; display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0;
+  }
+  #msg-input {
+    flex: 1; border: 1.5px solid #d8e4d8; border-radius: 22px;
+    padding: 10px 16px; font-family: inherit; font-size: 14px; color: var(--soil);
+    resize: none; outline: none; min-height: 42px; max-height: 120px;
+    line-height: 1.5; background: var(--mist); transition: border-color .2s;
+  }
+  #msg-input:focus { border-color: var(--leaf); background: white; }
+  #send-btn {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--moss); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  #send-btn:active { opacity: .7; }
+  .connecting { text-align: center; padding: 40px; color: #9aaa9a; font-size: 13px; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+  @media (min-width: 700px) {
+    #chat-screen { height: 88vh; max-height: 820px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 50px var(--shadow); margin: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-icon">🌿</div>
+  <div class="login-title">里山保全会</div>
+  <div class="login-sub">ONLINE MEETING ROOM</div>
+  <div class="divider-line"></div>
+  <span class="room-label">会議室を選択</span>
+  <div class="room-cards">
+    <div class="room-card" id="card-rijikai" onclick="selectRoom(&#39;rijikai&#39;)">
+      <div class="room-card-icon">🏛️</div>
+      <div class="room-card-name">理事会</div>
+      <div class="room-card-desc">理事・監事のみ</div>
+    </div>
+    <div class="room-card" id="card-sokai" onclick="selectRoom(&#39;sokai&#39;)">
+      <div class="room-card-icon">🌳</div>
+      <div class="room-card-name">総会</div>
+      <div class="room-card-desc">全会員・採決あり</div>
+    </div>
+  </div>
+  <label class="field-label">お名前を入力してください</label>
+  <input type="text" id="input-name" placeholder="例：船山 繁" maxlength="20" autocomplete="off" onkeydown="if(event.key===&#39;Enter&#39;) doLogin()">
+  <button class="login-btn" onclick="doLogin()">入室する</button>
+  <div class="error-msg" id="error-msg"></div>
+</div>
+
+<div id="chat-screen">
+  <div class="chat-header" id="chat-header">
+    <span class="chat-header-icon" id="header-icon"></span>
+    <span class="chat-header-title" id="header-title"></span>
+    <span class="room-pill" id="header-pill"></span>
+    <span class="user-badge" id="my-name-badge"></span>
+    <button class="exit-btn" onclick="exitRoom()">退室 ✕</button>
+  </div>
+  <div id="messages"><div class="connecting">接続中…</div></div>
+  <div class="chat-footer">
+    <textarea id="msg-input" placeholder="メッセージを入力… (Shift+Enterで改行)" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbyk9Ltz4bmoZYtGKoE6ENXN82oW_640VLe6SGsOXkTZkaKaP4CB3ARlGLiZL48Estazrw/exec';
+
+var RIJIKAI = ['船山繁','日下広平','大河原敦','佐藤英和','我妻俊司'];
+var SOKAI = [
+  '船山繁','日下広平','大河原敦','佐藤英和','我妻俊司',
+  '船山裕一郎','木村正宏','石田繁夫','下山政昭','峰岸 豊',
+  '松平浩一','中山あゆみ','福士陽子','本田孝','高木堅太郎',
+  '高瀬正弘','磯部求子','船山絵里奈'
+];
+
+var selectedRoom = '';
+var myName = '';
+var lastDate = '';
+var pollTimer = null;
+var lastCount = 0;
+var cbCount = 0;
+
+function selectRoom(room) {
+  selectedRoom = room;
+  document.getElementById('card-rijikai').classList.toggle('selected', room === 'rijikai');
+  document.getElementById('card-sokai').classList.toggle('selected', room === 'sokai');
+}
+
+function normalize(s) {
+  return s.replace(/　/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function doLogin() {
+  var raw = document.getElementById('input-name').value.trim();
+  var err = document.getElementById('error-msg');
+  if (!selectedRoom) { err.style.display='block'; err.textContent='会議室を選択してください。'; return; }
+  var list = selectedRoom === 'rijikai' ? RIJIKAI : SOKAI;
+  var matched = null;
+  for (var i = 0; i < list.length; i++) {
+    if (normalize(list[i]) === normalize(raw)) { matched = list[i]; break; }
+  }
+  if (!matched) {
+    err.style.display = 'block';
+    err.innerHTML = selectedRoom === 'rijikai'
+      ? 'お名前が名簿に見つかりません。<br>理事・監事の方のみ入室できます。'
+      : 'お名前が名簿に見つかりません。<br>登録名と完全に一致するようご確認ください。';
+    return;
+  }
+  err.style.display = 'none';
+  myName = matched;
+  var isRijikai = selectedRoom === 'rijikai';
+  document.getElementById('chat-header').className = 'chat-header ' + selectedRoom;
+  document.getElementById('header-icon').textContent  = isRijikai ? '🏛️' : '🌳';
+  document.getElementById('header-title').textContent = isRijikai ? '里山保全会 理事会' : '里山保全会 総会';
+  document.getElementById('header-pill').textContent  = isRijikai ? '理事会専用' : '役員・正会員';
+  document.getElementById('my-name-badge').textContent = myName;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('chat-screen').style.display = 'flex';
+  lastDate = ''; lastCount = 0;
+  document.getElementById('messages').innerHTML = '<div class="connecting">読み込み中…</div>';
+  var now = new Date();
+  jsonpPost({type:'system', text:'【入室】'+myName+'　'+fmtDate(now)+' '+fmt(now), room:selectedRoom}, function() {
+    loadMessages(true);
+  });
+  pollTimer = setInterval(function(){ loadMessages(false); }, 4000);
+  document.getElementById('msg-input').focus();
+}
+
+function exitRoom() {
+  if (!confirm(myName + ' さん、退室しますか？')) return;
+  var now = new Date();
+  jsonpPost({type:'system', text:'【退室】'+myName+'　'+fmtDate(now)+' '+fmt(now), room:selectedRoom}, function(){});
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  myName = ''; selectedRoom = ''; lastDate = ''; lastCount = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('card-rijikai').classList.remove('selected');
+  document.getElementById('card-sokai').classList.remove('selected');
+  document.getElementById('messages').innerHTML = '<div class="connecting">接続中…</div>';
+  document.getElementById('msg-input').value = '';
+  document.getElementById('chat-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'block';
+}
+
+// JSONPでGETリクエスト（CORSを回避）
+function loadMessages(force) {
+  var cbName = 'cb' + (++cbCount);
+  var script = document.createElement('script');
+  window[cbName] = function(msgs) {
+    delete window[cbName];
+    document.head.removeChild(script);
+    if (msgs.length !== lastCount || force) {
+      lastCount = msgs.length;
+      renderMessages(msgs, force);
+    }
+  };
+  script.src = GAS_URL + '?room=' + selectedRoom + '&callback=' + cbName + '&t=' + new Date().getTime();
+  document.head.appendChild(script);
+}
+
+// JSONPでPOSTの代わりにGETパラメータで送信
+function jsonpPost(data, callback) {
+  var cbName = 'cb' + (++cbCount);
+  var script = document.createElement('script');
+  window[cbName] = function(res) {
+    delete window[cbName];
+    document.head.removeChild(script);
+    if (callback) callback();
+  };
+  var params = '?action=post'
+    + '&room=' + encodeURIComponent(data.room || '')
+    + '&type=' + encodeURIComponent(data.type || '')
+    + '&name=' + encodeURIComponent(data.name || '')
+    + '&text=' + encodeURIComponent(data.text || '')
+    + '&date=' + encodeURIComponent(data.date || '')
+    + '&time=' + encodeURIComponent(data.time || '')
+    + '&callback=' + cbName
+    + '&t=' + new Date().getTime();
+  script.src = GAS_URL + params;
+  document.head.appendChild(script);
+}
+
+function renderMessages(msgs, force) {
+  var box = document.getElementById('messages');
+  var atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 100;
+  box.innerHTML = '';
+  lastDate = '';
+  msgs.forEach(function(m) {
+    if (!m || !m.type) return;
+    if (m.type === 'system') {
+      var d = document.createElement('div');
+      d.className = 'sys-msg'; d.textContent = m.text;
+      box.appendChild(d);
+    } else {
+      if (m.date && m.date !== lastDate) {
+        lastDate = m.date;
+        var dd = document.createElement('div');
+        dd.className = 'date-divider'; dd.textContent = m.date;
+        box.appendChild(dd);
+      }
+      var isMe = m.name === myName;
+      var wrap = document.createElement('div');
+      wrap.className = 'msg-wrap' + (isMe ? ' mine' : '');
+      wrap.innerHTML =
+        '<div class="msg-avatar '+(isMe?'mine-av':'')+'">' + esc(m.name).charAt(0) + '</div>' +
+        '<div class="msg-body">' +
+          '<div class="msg-name">' + esc(m.name) + '</div>' +
+          '<div class="msg-bubble">' + esc(m.text) + '</div>' +
+          '<div class="msg-time">' + (m.time||'') + '</div>' +
+        '</div>';
+      box.appendChild(wrap);
+    }
+  });
+  if (force || atBottom) box.scrollTop = box.scrollHeight;
+}
+
+function sendMessage() {
+  var input = document.getElementById('msg-input');
+  var text = input.value.trim();
+  if (!text) return;
+  var now = new Date();
+  input.value = ''; autoResize(input);
+  jsonpPost({
+    type:'chat', name:myName, text:text,
+    date:fmtDate(now), time:fmt(now), room:selectedRoom
+  }, function() { loadMessages(true); });
+}
+
+function handleKey(e) {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function autoResize(el) {
+  el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmt(d) {
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+function fmtDate(d) {
+  return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+}
+</script>
+
+
+</body></html>
