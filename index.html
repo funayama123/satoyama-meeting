@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0054)file:///Users/funayamashigeru/Downloads/meeting_1.html -->
-<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>里山保全会 会議室</title>
 <style>
@@ -82,7 +82,7 @@
   .error-msg { color: #c0392b; font-size: 12px; margin-top: 12px; text-align: center; display: none; line-height: 1.7; }
   #chat-screen {
     display: none; position: relative; z-index: 1;
-    width: 100%; max-width: 700px; height: 100vh; flex-direction: column;
+    width: 100%; max-width: 700px; height: 100vh; height: 100dvh; flex-direction: column;
   }
   .chat-header {
     color: white; padding: 11px 16px;
@@ -136,7 +136,7 @@
   .msg-wrap.mine .msg-bubble { background: var(--moss); color: white; border-radius: 18px 18px 4px 18px; }
   .msg-time { font-size: 10px; color: #b0b8b0; margin-top: 3px; padding-left: 3px; }
   .msg-wrap.mine .msg-time { text-align: right; padding-right: 3px; }
-  .chat-footer {
+  .chat-footer { position: sticky; bottom: 0; z-index: 10;
     background: white; border-top: 1px solid #e0eae0;
     padding: 10px 14px; display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0;
   }
@@ -170,19 +170,20 @@
   <div class="divider-line"></div>
   <span class="room-label">会議室を選択</span>
   <div class="room-cards">
-    <div class="room-card" id="card-rijikai" onclick="selectRoom(&#39;rijikai&#39;)">
+    <div class="room-card" id="card-rijikai" onclick="selectRoom('rijikai')">
       <div class="room-card-icon">🏛️</div>
       <div class="room-card-name">理事会</div>
       <div class="room-card-desc">理事・監事のみ</div>
     </div>
-    <div class="room-card" id="card-sokai" onclick="selectRoom(&#39;sokai&#39;)">
+    <div class="room-card" id="card-sokai" onclick="selectRoom('sokai')">
       <div class="room-card-icon">🌳</div>
       <div class="room-card-name">総会</div>
       <div class="room-card-desc">全会員・採決あり</div>
     </div>
   </div>
   <label class="field-label">お名前を入力してください</label>
-  <input type="text" id="input-name" placeholder="例：船山 繁" maxlength="20" autocomplete="off" onkeydown="if(event.key===&#39;Enter&#39;) doLogin()">
+  <input type="text" id="input-name" placeholder="例：船山 繁" maxlength="20" autocomplete="off"
+    onkeydown="if(event.key==='Enter') doLogin()">
   <button class="login-btn" onclick="doLogin()">入室する</button>
   <div class="error-msg" id="error-msg"></div>
 </div>
@@ -197,7 +198,8 @@
   </div>
   <div id="messages"><div class="connecting">接続中…</div></div>
   <div class="chat-footer">
-    <textarea id="msg-input" placeholder="メッセージを入力… (Shift+Enterで改行)" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <textarea id="msg-input" placeholder="メッセージを入力… (Shift+Enterで改行)" rows="1"
+      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
     <button id="send-btn" onclick="sendMessage()">➤</button>
   </div>
 </div>
@@ -381,6 +383,5 @@ function fmtDate(d) {
   return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
 }
 </script>
-
-
-</body></html>
+</body>
+</html>
